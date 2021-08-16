@@ -1,0 +1,48 @@
+﻿<weatherdata>
+	<location>
+		<name>Nairobi</name>
+		<type/>
+		<country>KE</country>
+		<timezone/>
+		<location altitude="0" latitude="-1.2834" longitude="36.8167" geobase="geonames" geobaseid="184745"/>
+	</location>
+	<credit/>
+	<meta>
+		<lastupdate/>
+		<calctime>0.0083</calctime>
+		<nextupdate/>
+	</meta>
+	<sun rise="2017-08-17T03:34:28" set="2017-08-17T15:38:48"/>
+	<forecast>
+		<time day="2017-08-17">
+			<symbol number="501" name="moderate rain" var="10d"/>
+			<precipitation value="5.03" type="rain"/>
+			<windDirection deg="54" code="NE" name="NorthEast"/>
+			<windSpeed mps="1.76" name="Light breeze"/>
+			<temperature day="24.55" min="16.92" max="24.55" night="16.92" eve="24.55" morn="24.55"/>
+			<pressure unit="hPa" value="832.78"/>
+			<humidity value="95" unit="%"/>
+			<clouds value="scattered clouds" all="48" unit="%"/>
+		</time>
+		<time day="2017-08-18">
+			<symbol number="500" name="light rain" var="10d"/>
+			<precipitation value="0.65" type="rain"/>
+			<windDirection deg="109" code="ESE" name="East-southeast"/>
+			<windSpeed mps="1.62" name="Light breeze"/>
+			<temperature day="21.11" min="14.33" max="23.5" night="17.81" eve="21.48" morn="14.33"/>
+			<pressure unit="hPa" value="836.23"/>
+			<humidity value="62" unit="%"/>
+			<clouds value="clear sky" all="8" unit="%"/>
+		</time>
+		<time day="2017-08-19">
+			<symbol number="500" name="light rain" var="10d"/>
+			<precipitation value="2.47" type="rain"/>
+			<windDirection deg="118" code="ESE" name="East-southeast"/>
+			<windSpeed mps="1.56" name=""/>
+			<temperature day="22.55" min="12.34" max="22.55" night="15.46" eve="20.92" morn="12.34"/>
+			<pressure unit="hPa" value="836.28"/>
+			<humidity value="56" unit="%"/>
+			<clouds value="clear sky" all="0" unit="%"/>
+		</time>
+	</forecast>
+</weatherdata>
