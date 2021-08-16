@@ -1,0 +1,259 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI,CD
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: 
+     - deploy-actions
+     - master
+#   pull_request:
+#     branches: [ master ]
+    # paths:
+    #  - 'config/**'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  node-build:
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_REPO: chalonnwoks/ajocard
+      DOCKERHUB_TAG: v0.0.1
+      DOCKERHUB_NAME: ajocard
+      DOCKERHUB_USER: chalonnwoks
+    
+    steps:
+      - name: Checkout Files
+        uses: actions/checkout@master
+
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        
+      - name: Login to docker hub
+        if: success()
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ env.DOCKERHUB_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.tag.outputs.result }}
+      
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.get_version.outputs.VERSION }}
+        
+      - name: Build Node image
+        if: success()
+        run: docker build -t ${{ env.DOCKERHUB_REPO }}:${{ env.DOCKERHUB_TAG }} ajocard-node-webapp/
+        
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.tag.outputs.result }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+        
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.tag.outputs.result }}  
+
+      - name: Push to docker registry
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.DOCKERHUB_REPO }}:${{ env.DOCKERHUB_TAG }}
+          
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+     
+      # - uses: FranzDiebold/github-env-vars-action@v2
+      # - name: Print environment variables exposed by this action
+      #   run: |
+      #     echo "CI_REPOSITORY_SLUG=$CI_REPOSITORY_SLUG"
+      #     echo "CI_REPOSITORY_OWNER=$CI_REPOSITORY_OWNER"
+      #     echo "CI_REPOSITORY_OWNER_SLUG=$CI_REPOSITORY_OWNER_SLUG"
+      #     echo "CI_REPOSITORY_NAME=$CI_REPOSITORY_NAME"
+      #     echo "CI_REPOSITORY_NAME_SLUG=$CI_REPOSITORY_NAME_SLUG"
+      #     echo "CI_REPOSITORY=$CI_REPOSITORY"
+      #     echo "CI_REF_SLUG=$CI_REF_SLUG"
+      #     echo "CI_ACTION_REF_NAME=$CI_ACTION_REF_NAME"
+      #     echo "CI_ACTION_REF_NAME_SLUG=$CI_ACTION_REF_NAME_SLUG"
+      #     echo "CI_REF_NAME=$CI_REF_NAME"
+      #     echo "CI_REF_NAME_SLUG=$CI_REF_NAME_SLUG"
+      #     echo "CI_REF=$CI_REF"
+      #     echo "CI_HEAD_REF_SLUG=$CI_HEAD_REF_SLUG"
+      #     echo "CI_HEAD_REF=$CI_HEAD_REF"
+      #     echo "CI_BASE_REF_SLUG=$CI_BASE_REF_SLUG"
+      #     echo "CI_BASE_REF=$CI_BASE_REF"
+      #     echo "CI_SHA_SHORT=$CI_SHA_SHORT"
+      #     echo "CI_SHA=$CI_SHA"
+      #     echo "CI_ACTOR=$CI_ACTOR"
+      #     echo "CI_EVENT_NAME=$CI_EVENT_NAME"
+      #     echo "CI_RUN_ID=$CI_RUN_ID"
+      #     echo "CI_RUN_NUMBER=$CI_RUN_NUMBER"
+      #     echo "CI_WORKFLOW=$CI_WORKFLOW"
+      #     echo "CI_ACTION=$CI_ACTION"
+  
+  go-build:
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_REPO: chalonnwoks/finger-attendance
+      DOCKERHUB_TAG: v0.0.1
+      DOCKERHUB_NAME: finger-attendance
+      DOCKERHUB_USER: chalonnwoks
+    
+    steps:
+      - name: Checkout Files
+        uses: actions/checkout@master
+        
+      - name: Login to docker hub
+        if: success()
+        uses: actions-hub/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ env.DOCKERHUB_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.tag.outputs.result }}
+        
+      - name: Build Node image
+        if: success()
+        run: docker build -t ${{ env.DOCKERHUB_REPO }}:${{ env.DOCKERHUB_TAG }} ajocard-go-webapp/
+        
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.tag.outputs.result }}
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+        
+      - name: Echo
+        if: success()
+        run: echo ${{ steps.tag.outputs.result }}        
+
+      - name: Push to docker registry
+        if: success()
+        uses: actions-hub/docker@master
+        with:
+          args: push ${{ env.DOCKERHUB_REPO }}:${{ env.DOCKERHUB_TAG }}
+          
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+#   deploy:
+#     name: Deploy to Digitalocean
+#     needs:
+#       - node-build
+#       - go-build
+#     runs-on: ubuntu-latest
+#     env:
+#       NODE_IMAGE: chalonnwoks/ajocard:v0.0.1
+#       GO_IMAGE: chalonnwoks/ajocard-go:v0.0.1
+#     steps:
+
+#     - name: Checkout master
+#       uses: actions/checkout@master
+
+#     - name: Install doctl
+#       uses: digitalocean/action-doctl@v2
+#       with:
+#         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+#     - name: Get Kubernetes cluster list
+#       if: success()
+#       run: doctl kubernetes cluster list
+
+#     - name: Echo variables
+#       if: success()
+#       run: echo $(ls $GITHUB_WORKSPACE)
+
+#     # - name: Create DigitalOcean kubernetes Cluster
+#     #   run: doctl kubernetes cluster create ajocard-cluster
+
+#     # - name: Check Context
+#     #   if: success()
+#     #   run: kubectl config current-context
+
+#     - name: Show Kubeconfig
+#       if: success()
+#       run: doctl kubernetes cluster kubeconfig show ajocard-cluster -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+#     - name: Save DigitalOcean kubeconfig with short-lived credentials
+#       if: success()
+#       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 ajocard-cluster -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+  
+#     - name: Get Kubernetes cluster list
+#       if: success()
+#       run: doctl kubernetes cluster list
+
+#     - name: Run Script
+#       run: |
+#           sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+#           curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+#           cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+#           deb https://apt.kubernetes.io/ kubernetes-xenial main
+#           EOF
+#           sudo apt-get update
+#           sudo apt-get install -y kubelet kubeadm kubectl
+#           sudo apt-mark hold kubelet kubeadm kubectl
+
+#     - name: Check Kubernetes version
+#       if: success()
+#       run: kubectl version
+
+#     - name: Update deployment file
+#       run:  sed -i 's|<IMAGE>|${{ env.NODE_IMAGE }}|' $GITHUB_WORKSPACE/config/deployment.yml
+
+#     - name: Echo
+#       if: success()
+#       run: | 
+#         echo ${{ steps.tag.outputs.result }}
+#         cat $GITHUB_WORKSPACE/config/deployment.yml
+
+#     - name: Deploy to DigitalOcean Kubernetes
+#       if: success()
+#       run: kubectl apply -f $GITHUB_WORKSPACE/config/deployment.yml
+
+#     - name: Check Kubernetes Nodes
+#       if: success()
+#       run: kubectl get nodes
+
+#     - uses: FranzDiebold/github-env-vars-action@v2
+#     - name: Print environment variables exposed by this action
+#       run: |
+#         echo "CI_REPOSITORY_SLUG=$CI_REPOSITORY_SLUG"
+#         echo "CI_REPOSITORY_OWNER=$CI_REPOSITORY_OWNER"
+#         echo "CI_REPOSITORY_OWNER_SLUG=$CI_REPOSITORY_OWNER_SLUG"
+#         echo "CI_REPOSITORY_NAME=$CI_REPOSITORY_NAME"
+#         echo "CI_REPOSITORY_NAME_SLUG=$CI_REPOSITORY_NAME_SLUG"
+#         echo "CI_REPOSITORY=$CI_REPOSITORY"
+#         echo "CI_REF_SLUG=$CI_REF_SLUG"
+#         echo "CI_ACTION_REF_NAME=$CI_ACTION_REF_NAME"
+#         echo "CI_ACTION_REF_NAME_SLUG=$CI_ACTION_REF_NAME_SLUG"
+#         echo "CI_REF_NAME=$CI_REF_NAME"
+#         echo "CI_REF_NAME_SLUG=$CI_REF_NAME_SLUG"
+#         echo "CI_REF=$CI_REF"
+#         echo "CI_HEAD_REF_SLUG=$CI_HEAD_REF_SLUG"
+#         echo "CI_HEAD_REF=$CI_HEAD_REF"
+#         echo "CI_BASE_REF_SLUG=$CI_BASE_REF_SLUG"
+#         echo "CI_BASE_REF=$CI_BASE_REF"
+#         echo "CI_SHA_SHORT=$CI_SHA_SHORT"
+#         echo "CI_SHA=$CI_SHA"
+#         echo "CI_ACTOR=$CI_ACTOR"
+#         echo "CI_EVENT_NAME=$CI_EVENT_NAME"
+#         echo "CI_RUN_ID=$CI_RUN_ID"
+#         echo "CI_RUN_NUMBER=$CI_RUN_NUMBER"
+#         echo "CI_WORKFLOW=$CI_WORKFLOW"
+#         echo "CI_ACTION=$CI_ACTION"
+
+    # - name: Verify deployment
+    #   run: kubectl rollout status deployment/ajocard-deployment
